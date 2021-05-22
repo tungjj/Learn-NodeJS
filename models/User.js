@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 // const validator = require('validator')
-var crypto = require('crypto');
+var bcrypt = require('bcryptjs')
 
 
 const UserSchema = new mongoose.Schema({
@@ -16,6 +16,11 @@ const UserSchema = new mongoose.Schema({
         unique: true,     index:     true,
         required: [true, "can't be blank"],
     }, 
+    password: {
+        type: String,     
+           
+        required: [true, "can't be blank"],
+    },
     email: {
         type: String,      lowercase: true,
         trim:  true,       match:     [/\S+@\S+\.\S+/, 'is invalid'],
@@ -30,24 +35,34 @@ const UserSchema = new mongoose.Schema({
     gender: {
         type: String,  
         // match:   ['Male', 'Female', 'Other']
-    },
-    hash: String,
-    salt: String
-}, {timestamps: true});
+    }
+});
 
-// // set salt and hash the password for a user
-// UserSchema.methods.setPassword = function(password){
-//     // create unique salt for particular user
-//     this.salt = crypto.randomBytes(16).toString('hex');
+UserSchema.pre('save', async function ()  {
+  var user = this
 
-//     // hashing user's salt and password with 1000 iterations,
-//     this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha512').toString('hex')
-// }
+	var salt = await bcrypt.genSalt(10)
+	var hash = await bcrypt.hash(user.password, salt)
+	
+	user.password = hash
+})
 
-// // Check the entered password is correct or not
-// UserSchema.methods.validPassword = (password) =>{
-//     let hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha512').toString('hex')
-//     return this.hash === hash
-// }
+UserSchema.statics.findByCredentials = async function (username, password) {
+    let user1 = await User.findOne({username: username})
 
-module.exports =  mongoose.model('User', UserSchema)
+    if(!user1){
+        throw new Error('Unable to login')
+    }
+
+    let isMatch = await bcrypt.compare(password, user1.password)
+
+    if(!isMatch){
+        throw new Eroor("User or password not true")
+    }
+
+    return user1
+}
+
+const User = mongoose.model('User', UserSchema)
+module.exports = User
+

@@ -11,7 +11,6 @@ app.use('/user', user_route)
 
 app.get('/', (req, res)=>{res.send('hello')})
 
-
 app.listen(port, () =>
 {
     console.log('Server is up on port'+port)
