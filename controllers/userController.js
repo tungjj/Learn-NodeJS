@@ -1,4 +1,5 @@
-var User = require('../models/User')
+var User =  require('../models/User')
+
 require('../mongoose')
 
 exports.user_list = function (req, res) {
@@ -72,9 +73,9 @@ exports.delete = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         let user2 = await User.findByCredentials(req.body.username, req.body.password) 
-        let token = await User.generateAuthToken()
+        await user2.authen(user2)
 
-        res.send(user2, token)
+        res.send( user2 )
     } catch (error) {
         res.status(400).send()
     }
