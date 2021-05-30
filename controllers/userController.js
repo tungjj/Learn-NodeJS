@@ -70,7 +70,14 @@ exports.delete = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-    let user2 = await User.findByCredentials(req.body.username, req.body.password) 
-    console.log(user2)
+    try {
+        let user2 = await User.findByCredentials(req.body.username, req.body.password) 
+        let token = await User.generateAuthToken()
+
+        res.send(user2, token)
+    } catch (error) {
+        res.status(400).send()
+    }
+   
 }
 

@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 // const validator = require('validator')
 var bcrypt = require('bcryptjs')
-
+// can chuyen sang dang import cua ES6
+const jwt = require('jsonwebtoken')
 
 const UserSchema = new mongoose.Schema({
     fullname: {
@@ -35,8 +36,24 @@ const UserSchema = new mongoose.Schema({
     gender: {
         type: String,  
         // match:   ['Male', 'Female', 'Other']
-    }
+    }, 
+    tokens: [
+        {token: {
+            type: String,
+            require: true
+        } }
+    ]
 });
+
+UserSchema.methods.generateAuthToken = async function (){
+    let user = this
+    let token = jwt.sign({_id: user._id.toString()}, 'thisismykey')
+
+    user.tokens.concat({token})
+    await user.save()
+
+    return token
+}
 
 UserSchema.pre('save', async function ()  {
   var user = this
