@@ -45,24 +45,18 @@ const UserSchema = new mongoose.Schema({
     ]
 });
 
-// UserSchema.methods.authenToken =  function (){
-//     // let user = this
-//     console.log(user)
-//     // let token = await jwt.sign({_id: user._id.toString()}, 'thisismykey')
 
-//     // user.tokens.concat({token})
-//     // await user.save()
-
-//     // return token
-// }
 UserSchema.method("authen",async function(user){
 
     let token = await jwt.sign({_id: user._id.toString()}, "thisismycommand",
-                                            {expiresIn: 10}) //vietr lai cai nay
+                                            {expiresIn: '1 day'}) //vietr lai cai nay
+
+    console.log(token)
+    let data = await jwt.verify(token, 'thisismycommand')
+    console.log(data)
 
     await user.tokens.push({token})
     await user.save()
-
 })
 
 UserSchema.pre('save', async function ()  {
