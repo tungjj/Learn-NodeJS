@@ -82,7 +82,7 @@ exports.login = async (req, res) => {
    
 }
 
-exports.me = async (req, res)=>{
+exports.profile = async (req, res)=>{
     res.send(req.user)
 }
 

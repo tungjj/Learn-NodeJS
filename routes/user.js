@@ -8,7 +8,7 @@ router.post('/login', user_controller.login)
 router.post('/logout', user_controller.logout)
 
 router.get('/list', user_controller.user_list)
-router.get('/me', auth, user_controller.me)
+router.get('/me', auth, user_controller.profile)
 
 router.patch('/:id', user_controller.update)
 
