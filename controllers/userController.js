@@ -72,8 +72,9 @@ exports.delete = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-        let user2 = await User.findByCredentials(req.body.username, req.body.password) 
-        await user2.authen(user2)
+        let user2 = await User.findByCredentials(req.body.username, req.body.password) //tim kiem xem co user trong db khong
+        console.log(user2)
+        await user2.authen(user2) // sinh jsonwebtoken cho user
 
         res.send( user2 )
     } catch (error) {
@@ -87,6 +88,15 @@ exports.profile = async (req, res)=>{
 }
 
 exports.logout = async (req, res) => {
+    try {
+        req.user.tokens = await req.user.tokens.filter( (token) => token.token !== req.token )
+        
+        await req.user.updateOne(req.user)
+
+        res.send('Logout success!')
+    } catch (error) {
+        res.status(500).send()
+    }
     
 }
 

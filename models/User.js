@@ -56,7 +56,7 @@ UserSchema.method("authen",async function(user){
     console.log(data)
 
     await user.tokens.push({token})
-    await user.save()
+    await user.updateOne(user)
 })
 
 UserSchema.pre('save', async function ()  {
@@ -69,18 +69,17 @@ UserSchema.pre('save', async function ()  {
 })
 
 UserSchema.statics.findByCredentials = async function (username, password) {
-    let user1 = await User.findOne({username: username})
-
+    let user1 = await User.findOne({username})
+    console.log(user1)
     if(!user1){
         throw new Error('Unable to login')
     }
-
     let isMatch = await bcrypt.compare(password, user1.password)
-
+    console.log(isMatch)
     if(!isMatch){
-        throw new Eroor("User or password not true")
+        throw new Eroor("User or password not true").send()
     }
-
+    
     return user1
 }
 
